@@ -56,7 +56,7 @@ private:
 private:
     uint64_t m_ms = 0;              // 执行周期
     std::function<void ()> m_cb;    // 执行的回调函数
-    bool m_circular = false;
+    bool m_circular = false;        // 是否是循环
     TimerManager* m_manager = nullptr;
     uint64_t m_next = 0 ;           // 精确的执行时间
 
