@@ -73,7 +73,7 @@ IOManager::IOManager(size_t threads , bool use_caller , const std::string& name 
     rt = fcntl(m_tickleFds[0], F_SETFL , O_NONBLOCK); 
     WYZ_ASSERT(!rt);
 
-    // 构建epoll兴趣列表
+    // 将管道的读端加入epoll兴趣列表
     rt = epoll_ctl(m_epfd, EPOLL_CTL_ADD, m_tickleFds[0], &ev);
     WYZ_ASSERT(!rt);
 
@@ -269,6 +269,7 @@ bool IOManager::cancelAll(int fd){
             << (EPOLL_EVENTS)fd_ctx->events;
             return -1;
     }
+    /* 只关注读写事件 */
     if(fd_ctx->events & IOManager::READ){
         fd_ctx->triggerEvent(READ);
         --m_pendingEventCount;
@@ -295,7 +296,7 @@ void IOManager::tickle(){
 
 bool IOManager::stopping(uint64_t& timeout){
     timeout = getNextTimer();
-    return timeout == ~0ull
+    return timeout == ~0ull        /// 没有定时器
         && m_pendingEventCount == 0
         && Scheduler::stopping() ;
 }
