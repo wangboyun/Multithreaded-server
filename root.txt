@@ -1,0 +1,59 @@
+2021-10-06 10:27:34	INFO	 yaml_test_before
+2021-10-11 21:53:14	INFO	name=class.map description=system person typename=St3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEN3wyz6PersonESt4lessIS5_ESaISt4pairIKS5_S7_EEE value=
+2021-10-11 21:53:14	INFO	name=system.map description= vector int map typename=St3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEiSt4lessIS5_ESaISt4pairIKS5_iEEE value=key: 3
+2021-10-11 21:53:14	INFO	name=system.set description= vector int set typename=St3setIiSt4lessIiESaIiEE value=- 1
+- 3
+2021-10-11 21:53:14	INFO	name=system.vector description= vector int type typename=St6vectorIiSaIiEE value=- 1
+- 3
+2021-10-11 21:53:14	INFO	name=class.person description=人类 typename=N3wyz6PersonE value=name: ""
+age: 0
+2021-10-11 21:53:14	INFO	name=system.uset description= vector int uset typename=St13unordered_setIiSt4hashIiESt8equal_toIiESaIiEE value=- 3
+- 1
+2021-10-11 21:53:14	INFO	name=logs description=logs config typename=St3setIN3wyz9LogDefineESt4lessIS1_ESaIS1_EE value=- name: root
+  level: INFO
+  formatter: "%d%T%p%T%m%n"
+  appenders:
+    - type: FileLogAppender
+      file: /home/wyz/workspace/wyz/root.txt
+    - type: StdoutLogAppender
+- name: system
+  level: INFO
+  formatter: "%d%T%p%T%m%n"
+  appenders:
+    - type: FileLogAppender
+      file: /home/wyz/workspace/wyz/system.txt
+      formatter: "%d%T[%p]%T%m%n"
+    - type: StdoutLogAppender
+2021-10-11 21:53:14	INFO	name=system.port description=端口号 typename=i value=8080
+2021-10-11 21:53:14	INFO	name=system.umap description= vector int umap typename=St13unordered_mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEiSt4hashIS5_ESt8equal_toIS5_ESaISt4pairIKS5_iEEE value=key: 3
+2021-10-11 21:53:14	INFO	name=system.list description= vector int list typename=NSt7__cxx114listIiSaIiEEE value=- 1
+- 3
+2021-10-11 21:54:26	INFO	name=class.map description=system person typename=St3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEN3wyz6PersonESt4lessIS5_ESaISt4pairIKS5_S7_EEE value=
+2021-10-11 21:54:26	INFO	name=system.map description= vector int map typename=St3mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEiSt4lessIS5_ESaISt4pairIKS5_iEEE value=key: 3
+2021-10-11 21:54:26	INFO	name=system.set description= vector int set typename=St3setIiSt4lessIiESaIiEE value=- 1
+- 3
+2021-10-11 21:54:26	INFO	name=system.vector description= vector int type typename=St6vectorIiSaIiEE value=- 1
+- 3
+2021-10-11 21:54:26	INFO	name=class.person description=人类 typename=N3wyz6PersonE value=name: ""
+age: 0
+2021-10-11 21:54:26	INFO	name=system.uset description= vector int uset typename=St13unordered_setIiSt4hashIiESt8equal_toIiESaIiEE value=- 3
+- 1
+2021-10-11 21:54:26	INFO	name=logs description=logs config typename=St3setIN3wyz9LogDefineESt4lessIS1_ESaIS1_EE value=- name: root
+  level: INFO
+  formatter: "%d%T%p%T%m%n"
+  appenders:
+    - type: FileLogAppender
+      file: /home/wyz/workspace/wyz/root.txt
+    - type: StdoutLogAppender
+- name: system
+  level: INFO
+  formatter: "%d%T%p%T%m%n"
+  appenders:
+    - type: FileLogAppender
+      file: /home/wyz/workspace/wyz/system.txt
+      formatter: "%d%T[%p]%T%m%n"
+    - type: StdoutLogAppender
+2021-10-11 21:54:26	INFO	name=system.port description=端口号 typename=i value=8080
+2021-10-11 21:54:26	INFO	name=system.umap description= vector int umap typename=St13unordered_mapINSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEiSt4hashIS5_ESt8equal_toIS5_ESaISt4pairIKS5_iEEE value=key: 3
+2021-10-11 21:54:26	INFO	name=system.list description= vector int list typename=NSt7__cxx114listIiSaIiEEE value=- 1
+- 3

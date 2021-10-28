@@ -1,0 +1,11 @@
+/home/wyz/workspace/wyz/build/CMakeFiles/test_hook.dir
+/home/wyz/workspace/wyz/build/CMakeFiles/test_iomanager.dir
+/home/wyz/workspace/wyz/build/CMakeFiles/test_fiber.dir
+/home/wyz/workspace/wyz/build/CMakeFiles/rebuild_cache.dir
+/home/wyz/workspace/wyz/build/CMakeFiles/test_util.dir
+/home/wyz/workspace/wyz/build/CMakeFiles/edit_cache.dir
+/home/wyz/workspace/wyz/build/CMakeFiles/test_thread.dir
+/home/wyz/workspace/wyz/build/CMakeFiles/test_scheduler.dir
+/home/wyz/workspace/wyz/build/CMakeFiles/test_log.dir
+/home/wyz/workspace/wyz/build/CMakeFiles/test_config.dir
+/home/wyz/workspace/wyz/build/CMakeFiles/wyz.dir

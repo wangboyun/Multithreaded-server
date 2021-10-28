@@ -1,0 +1,8 @@
+2021-10-08 16:48:26	21665		0	[INFO]	[root]	test/test_log.cpp:22	test 
+2021-10-08 16:48:26	21665		0	[ERROR]	[root]	test/test_log.cpp:23	test error 
+2021-10-08 16:48:26	21665		0	[INFO]	[root]	test/test_log.cpp:25	test famt  qr
+2021-10-08 16:48:26	21665		0	[ERROR]	[root]	test/test_log.cpp:26	test famt error getthread fail
+2021-10-11 15:39:57	37819		0	[INFO]	[root]	test/test_log.cpp:23	test 
+2021-10-11 15:39:57	37819		0	[ERROR]	[root]	test/test_log.cpp:24	test error 
+2021-10-11 15:39:57	37819		0	[INFO]	[root]	test/test_log.cpp:26	test famt  qr
+2021-10-11 15:39:57	37819		0	[ERROR]	[root]	test/test_log.cpp:27	test famt error getthread fail

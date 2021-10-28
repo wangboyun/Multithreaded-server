@@ -1,0 +1,7 @@
+logs:
+    - name: root
+      level: info
+      appenders:
+          - type: FileLogAppender
+            formatter: "%d%T%p%T[%N]%T%m%n"
+            file: /home/wyz/workspace/wyz/mutex.txt
