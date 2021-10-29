@@ -271,11 +271,11 @@ bool IOManager::cancelAll(int fd){
     }
     /* 只关注读写事件 */
     if(fd_ctx->events & IOManager::READ){
-        fd_ctx->triggerEvent(READ);
+        fd_ctx->triggerEvent(IOManager::READ);
         --m_pendingEventCount;
     }
     if(fd_ctx->events & IOManager::WRITE){
-        fd_ctx->triggerEvent(WRITE);
+        fd_ctx->triggerEvent(IOManager::WRITE);
         --m_pendingEventCount;
     }
     WYZ_ASSERT(fd_ctx->events == 0);
