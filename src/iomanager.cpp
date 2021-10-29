@@ -278,11 +278,12 @@ bool IOManager::cancelAll(int fd){
         fd_ctx->triggerEvent(IOManager::WRITE);
         --m_pendingEventCount;
     }
-    WYZ_ASSERT(fd_ctx->events == 0);
+    WYZ_ASSERT(fd_ctx->events == IOManager::NONE);
     return true;
 }
 
 IOManager* IOManager::GetThis(){
+    // dynamic_cast  安全的向下转化 ， 基类  --> 派生类
     return dynamic_cast<IOManager*>(Scheduler::GetThis());
 }
 
@@ -356,14 +357,14 @@ void IOManager::idle(){
             if(event.events & (EPOLLERR | EPOLLHUP)){
                 event.events |= (EPOLLIN | EPOLLOUT) & fd_ctx->events;
             }
-            int real_events = NONE;
+            int real_events = IOManager::NONE;
             if(event.events & EPOLLIN){
-                real_events |= READ;
+                real_events |= IOManager::READ;
             }
             if(event.events & EPOLLOUT){
-                real_events |= WRITE;
+                real_events |= IOManager::WRITE;
             }
-            if((fd_ctx->events & real_events) == NONE){
+            if((fd_ctx->events & real_events) == IOManager::NONE){
                 continue;
             }
 
@@ -379,15 +380,16 @@ void IOManager::idle(){
                     << rt2 << " (" << errno << ") (" << strerror(errno) << ")";
                 continue;
             }
-            if(real_events & READ){
-                fd_ctx->triggerEvent(READ);
+            if(real_events & IOManager::READ){
+                fd_ctx->triggerEvent(IOManager::READ);
                 --m_pendingEventCount;
             }
-            if(real_events & WRITE){
-                fd_ctx->triggerEvent(WRITE);
+            if(real_events & IOManager::WRITE){
+                fd_ctx->triggerEvent(IOManager::WRITE);
                 --m_pendingEventCount;
             }
         }
+        /* 出让调度器 */
         Fiber::ptr cur = Fiber::GetThis();
         auto raw_ptr = cur.get();
 
