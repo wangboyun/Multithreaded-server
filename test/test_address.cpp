@@ -35,7 +35,7 @@ void test_iface(){
 }
 
 int main(){
-    // test_lookup();
-    test_iface();
+    test_lookup();
+    //test_iface();
     return 0;
 }

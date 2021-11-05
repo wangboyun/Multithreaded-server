@@ -8,6 +8,7 @@
 #include "address.h"
 #include "log.h"
 #include "mutex.h"
+#include "endian.h"
 
 #include <cerrno>
 #include <cstdint>
@@ -59,7 +60,7 @@ Address::ptr Address::Create(const sockaddr* addr, socklen_t addrlen){
     }
 }
 
-bool Lookup (std::vector<Address::ptr>& result , const std::string& host , int family , int type , int protocol ){
+bool Address::Lookup (std::vector<Address::ptr>& result , const std::string& host , int family , int type , int protocol ){
     addrinfo hints , *results, *next;
     
     memset(&hints, 0, sizeof(hints));
@@ -152,6 +153,7 @@ bool Address::GetInterfaceAddresses(std::multimap<std::string
             Address::ptr addr;
             uint32_t prefix_len  = ~0u;
             if(family != AF_UNSPEC && family != next->ifa_addr->sa_family){
+                next = next->ifa_next;
                 continue;
             }
             switch (next->ifa_addr->sa_family) {
@@ -185,6 +187,31 @@ bool Address::GetInterfaceAddresses(std::multimap<std::string
         return false;
     }
     freeifaddrs(res);
+    return !result.empty();
+}
+
+bool Address::GetInterfaceAddresses(std::vector<std::pair<Address::ptr, uint32_t> >&result,const std::string& iface, int family ){
+    if(iface.empty() || iface == "*") {
+        if(family == AF_INET || family == AF_UNSPEC) {
+            result.push_back(std::make_pair(Address::ptr(new IPv4Address()), 0u));
+        }
+        if(family == AF_INET6 || family == AF_UNSPEC) {
+            result.push_back(std::make_pair(Address::ptr(new IPv6Address()), 0u));
+        }
+        return true;
+    }
+
+    std::multimap<std::string
+          ,std::pair<Address::ptr, uint32_t> > results;
+
+    if(!GetInterfaceAddresses(results, family)) {
+        return false;
+    }
+
+    auto its = results.equal_range(iface);
+    for(; its.first != its.second; ++its.first) {
+        result.push_back(its.first->second);
+    }
     return !result.empty();
 }
 
@@ -273,7 +300,7 @@ const sockaddr* IPv4Address::getAddr()const{
 }
     
 const socklen_t IPv4Address::getLen()const {
-    return sizeof(m_addr);
+    return (socklen_t)sizeof(m_addr);
 }
 
 std::ostream& IPv4Address::insert(std::ostream& os)const {
@@ -351,7 +378,7 @@ const sockaddr* IPv6Address::getAddr()const {
 }
     
 const socklen_t IPv6Address::getLen()const {
-    return sizeof(m_addr);
+    return (socklen_t)sizeof(m_addr);
 }
 
 /// 输出IPv6 格式 没看懂要学下 IPv6 的格式 

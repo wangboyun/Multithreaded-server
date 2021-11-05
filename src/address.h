@@ -215,6 +215,7 @@ private:
 class UnixAddress : public Address{
 public:
     using ptr = std::shared_ptr<UnixAddress>;
+    UnixAddress(){};
     UnixAddress(const std::string& path);
 
     void setLen(uint32_t val);

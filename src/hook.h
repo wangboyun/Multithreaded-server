@@ -8,6 +8,7 @@
 #ifndef __WYZ_HOOK_H__
 #define __WYZ_HOOK_H__
 
+#include <cstdint>
 #include <sys/ioctl.h>
 #include <fcntl.h>
 #include <sys/socket.h>
@@ -93,6 +94,8 @@ extern getsockopt_func getsockopt_f;
 
 typedef int (*setsockopt_func)(int sockfd, int level, int optname, const void *optval, socklen_t optlen);
 extern setsockopt_func setsockopt_f;
+
+extern int connect_with_timeout(int fd, const struct sockaddr* addr, socklen_t addrlen, uint64_t timeout_ms);
 
 }
 

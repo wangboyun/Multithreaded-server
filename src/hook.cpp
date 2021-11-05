@@ -229,7 +229,7 @@ int connect_with_timeout(int sockfd, const struct sockaddr *addr, socklen_t addr
         return connect_f(sockfd, addr , addrlen);
     }
 
-    WYZ_LOG_DEBUG(g_logger) << "nonblock";
+    // WYZ_LOG_DEBUG(g_logger) << "nonblock";
     wyz::FdCtx::ptr ctx = wyz::FdMar::GetInstance()->get(sockfd);
     if(!ctx || ctx->isClosed()){
         errno = EBADF;
