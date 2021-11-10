@@ -1,10 +1,13 @@
-/*
- * @Description: socket 网络地址封装 
- * @Version: 0.1
- * @Autor: Wyz
- * @Date: 2021-10-29 14:48:51
+/**
+ * @file address.h
+ * @brief socket 地址类封装
+ * @author wyz (501826086@qq.com)
+ * @version 1.0
+ * @date 2021-11-06
+ * 
+ * @copyright Copyright (c) 2021  wyz
+ * 
  */
-
 #ifndef __WYZ_ADDRESS_H__
 #define __WYZ_ADDRESS_H__
 
@@ -41,7 +44,7 @@ public:
     /**
      * @brief 通过host地址返回对应条件的所有Address
      * @param[out] result 保存满足条件的Address
-     * @param[in] host 域名,服务器名等.举例: www.sylar.top[:80] (方括号为可选内容)
+     * @param[in] host 域名,服务器名等.举例: www.baidu.com[:80] (方括号为可选内容)
      * @param[in] family 协议族(AF_INT, AF_INT6, AF_UNIX)
      * @param[in] type socketl类型SOCK_STREAM、SOCK_DGRAM 等
      * @param[in] protocol 协议,IPPROTO_TCP、IPPROTO_UDP 等
@@ -49,7 +52,7 @@ public:
      */ 
     static bool Lookup (std::vector<Address::ptr>& result , const std::string& host , int family = AF_INET , int type = 0 , int protocol = 0);
 
-    static Address::ptr LookupAddress(const std::string& host , int family = AF_INET , int type = 0 , int protocol = 0);
+    static Address::ptr LookupAnyAddress(const std::string& host , int family = AF_INET , int type = 0 , int protocol = 0);
 
     static std::shared_ptr<IPAddress> LookupIPAddress(const std::string& host , int family = AF_INET , int type = 0 , int protocol = 0);
 

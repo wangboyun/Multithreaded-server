@@ -1,8 +1,12 @@
-/*
- * @Description: 协程调度模块
- * @Version: 0.1
- * @Autor: Wyz
- * @Date: 2021-10-13 19:56:23
+/**
+ * @file scheduler.h
+ * @brief  协程调度模块
+ * @author wyz (501826086@qq.com)
+ * @version 1.0
+ * @date 2021-11-07
+ * 
+ * @copyright Copyright (c) 2021  wyz
+ * 
  */
 
 #ifndef __WYZ_SCHEDULER_H__

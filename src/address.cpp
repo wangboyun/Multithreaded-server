@@ -1,8 +1,12 @@
-/*
- * @Description: 地址类实现
- * @Version: 0.1
- * @Autor: Wyz
- * @Date: 2021-10-29 14:49:02
+/**
+ * @file address.cpp
+ * @brief  地址类封装实现
+ * @author wyz (501826086@qq.com)
+ * @version 1.0
+ * @date 2021-11-06
+ * 
+ * @copyright Copyright (c) 2021  wyz
+ * 
  */
 
 #include "address.h"
@@ -117,7 +121,7 @@ bool Address::Lookup (std::vector<Address::ptr>& result , const std::string& hos
     return !result.empty();
 }
 
-Address::ptr Address::LookupAddress(const std::string& host , int family
+Address::ptr Address::LookupAnyAddress(const std::string& host , int family
                                     , int type , int protocol ){
     std::vector<Address::ptr> res;
     if(Lookup(res, host, family, type, protocol)){

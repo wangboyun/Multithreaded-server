@@ -1,9 +1,14 @@
-/*
- * @Description: hook技术 通过hook技术 将系统调用改成自定义实现
- * @Version: 0.1
- * @Autor: Wyz
- * @Date: 2021-10-25 10:38:44
+/**
+ * @file hook.h
+ * @brief  hook技术 通过hook技术 将系统调用改成自定义实现
+ * @author wyz (501826086@qq.com)
+ * @version 1.0
+ * @date 2021-11-07
+ * 
+ * @copyright Copyright (c) 2021  wyz
+ * 
  */
+
 
 #ifndef __WYZ_HOOK_H__
 #define __WYZ_HOOK_H__
