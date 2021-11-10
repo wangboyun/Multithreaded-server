@@ -1,0 +1,91 @@
+@startuml address
+
+Address  <|-- IPAdderss : 公有继承
+Address  <|-- UnixAddress : 公有继承
+Address  <|-- UnKnowAddress : 公有继承
+IPAdderss <|-- IPv4Address : 公有继承
+IPAdderss <|-- IPv6Address : 公有继承
+
+Object <|-- Address : 静态方法接口调用
+
+Object : Address::ptr Create(const sockaddr* addr, socklen_t  addrlen) : 根据对应的 addr 来创建对应的Address
+Object : bool Lookup (std::vector<Address::ptr>& result , const std::string& host , int family = AF_INET , int type = 0 , int protocol = 0) : 根据给定的域名 host 来找到所以的地址
+Object : Address::ptr LookupAnyAddress(const std::string& host , int family = AF_INET , int type = 0 , int protocol = 0) : 通过调用 Lookup 来返回需要的类型的任意一个地址
+Object : std::shared_ptr<IPAddress> LookupIPAddress(const std::string& host , int family = AF_INET , int type = 0 , int protocol = 0) : 调用 Lookup 方法来通过域名来寻找任意类型IP地址(IPv4 or IPv6)
+Object : bool GetInterfaceAddresses(std::multimap<std::string,std::pair<Address::ptr, uint32_t> >& result,int family = AF_INET)  : 通过网卡名称来获取任意类型的地址
+Object : bool GetInterfaceAddresses(std::vector<std::pair<Address::ptr, uint32_t> >&result,const std::string& iface, int family = AF_INET) : 通过指定的网卡名称来获取任意类型的地址
+
+class Address{
+    {abstract} virtual ~Address(){};
+    {abstract} const sockaddr* getAddr()const = 0;
+    {abstract} virtual const socklen_t getLen()const = 0;
+    {abstract} virtual std::ostream& insert(std::ostream& os)const = 0;
+    + int getFamily()const;
+    + std::string toString();
+}
+
+
+class IPAdderss{
+    + Object :  IPAddress::ptr Create(const char* address, uint16_t port = 0);
+    {abstract} virtual ~IPAddress(){};
+    {abstract} virtual IPAddress::ptr broadcastAddress(uint32_t prefix_len) = 0 ;
+    {abstract} virtual IPAddress::ptr networdAddress(uint32_t prefix_len) = 0;
+    {abstract} virtual IPAddress::ptr subnetAddress(uint32_t prefix_len) = 0;
+    {abstract} virtual uint32_t getPort()const = 0;
+    {abstract} virtual void setPort(uint16_t port) = 0;
+}
+
+class IPv4Address{
+    + Object : IPv4Address::ptr Create(const char* address, uint16_t port = 0);
+    + IPv4Address(const sockaddr_in& address);
+    + IPv4Address(uint32_t address = INADDR_ANY , uint16_t port = 0);
+    + const sockaddr* getAddr()const override;
+    + const socklen_t getLen()const override;
+    + std::ostream& insert(std::ostream& os)const override;
+    + IPAddress::ptr broadcastAddress(uint32_t prefix_len) override ;
+    + IPAddress::ptr networdAddress(uint32_t prefix_len) override;
+    + IPAddress::ptr subnetAddress(uint32_t prefix_len) override;
+    + uint32_t getPort()const override;
+    + void setPort(uint16_t port) override;
+    -sockaddr_in m_addr;
+}
+
+class IPv6Address {
+    + Object : IPv6Address::ptr Create(const char* address, uint16_t port = 0);
+    + IPv6Address();
+    + IPv6Address(const uint8_t address[16] , uint16_t port = 0 );
+    + IPv6Address(const sockaddr_in6& address);
+    + const sockaddr* getAddr()const override;
+    + const socklen_t getLen()const override;
+    + std::ostream& insert(std::ostream& os)const override;
+    + IPAddress::ptr broadcastAddress(uint32_t prefix_len) override ;  
+    + IPAddress::ptr networdAddress(uint32_t prefix_len) override; 
+    + IPAddress::ptr subnetAddress(uint32_t prefix_len) override;
+    + uint32_t getPort()const override;
+    + void setPort(uint16_t port) override;
+    -sockaddr_in6 m_addr;
+}
+
+class UnixAddress {
+    + UnixAddress(){};
+    + UnixAddress(const std::string& path);
+    + void setLen(uint32_t val);
+    + std::string getpath()const ;
+    + const sockaddr* getAddr()const override;
+    + const socklen_t getLen()const override;
+    + std::ostream& insert(std::ostream& os)const override;
+    -sockaddr_un m_addr;
+    -socklen_t m_len;
+}
+
+class UnKnowAddress {
+    + UnKnowAddress(int family);
+    + UnKnowAddress(const sockaddr& address);
+    + const sockaddr* getAddr()const override;
+    + const socklen_t getLen()const override;
+    + std::ostream& insert(std::ostream& os)const override;
+    -sockaddr m_addr;
+}
+
+
+@enduml

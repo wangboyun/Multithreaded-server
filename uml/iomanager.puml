@@ -1,0 +1,142 @@
+@startuml IOManager
+
+TimerManager <--> Timer : 互为友元
+Task *-- Scheduler : 包含
+IOManager --|> TimerManager : 公有继承
+IOManager --|> Scheduler : 公有继承
+
+EventType *-- IOManager : 包含
+EventContext *-- FdContext : 包含
+class Timer{
+    + bool cancel();    // 取消定时器
+    + bool refresh();   // 刷新定时器(当前时间)
+    + bool reset(uint64_t ms, bool from_now);//(重置定时器时间)
+    - Timer(uint64_t ms , std::function<void ()> cb , bool circular , TimerManager* manager);
+    - Timer(uint64_t next);
+    - uint64_t m_ms = 0;              // 执行周期
+    - std::function<void ()> m_cb;    // 执行的回调函数
+    - bool m_circular = false;        // 是否是循环
+    - TimerManager* m_manager = nullptr;
+    - uint64_t m_next = 0 ;  
+    - struct Comparator{
+        bool operator() (const Timer::ptr& lhs , const Timer::ptr& rhs )const;
+    };
+
+}
+
+class TimerManager{
+    + TimerManager();
+    + virtual ~TimerManager();
+    + Timer::ptr addTimer(uint64_t ms , std::function<void ()> cb , bool circular = false);
+    + Timer::ptr addConditionTimer(uint64_t ms , std::function<void ()> cb ,std::weak_ptr<void> weak_cond ,  bool circular = false);
+    + uint64_t getNextTimer();
+    + void listExpiredCb(std::vector<std::function<void()>>& cbs); 获取需要执行的定时器的回调函数列表
+    bool hasTimer(); 有没有定时器 
+    # virtual void onTimerInsertedAtFront() = 0;
+    # void addTimer(Timer::ptr timer , RWMutexType::WriteLock& lock);
+    - bool detectClockRollover(uint64_t now_ms);
+    - RWMutexType m_mutex; /// 互斥量
+    - std::set<Timer::ptr , Timer::Comparator> m_timers; /// 定时器集合
+    - bool m_titckled = false; /// 触发onTimerInsertedAtFront
+    - uint64_t m_previouseTime = 0; /// 上次执行的时间
+}
+
+class Scheduler{
+    + Scheduler(size_t threads = 1 , bool use_caller = true , const std::string& name = "");
+    + virtual ~Scheduler();
+    + inline const std::string& getName()const {return m_name;};
+    + static Scheduler* GetThis();         // 获取当前的协程调度器
+    + static Fiber* GetMainFiber();       // 返回当前协程调度器的调度协程
+    + void start();
+    + void stop();
+    template<typename  FiberOrCb>
+    + void schedule(FiberOrCb fc , int thread = -1); /* 一个一个任务添加 */
+    template<typename  InputIterator>
+    + void schedule(InputIterator begin , InputIterator end)/* 批量添加任务*/   
+    # virtual void tickle();            // 通知调度器有任务来临
+    # void setThis();                   // 设置当前的协程调度器
+    # void run();                       // 协程调度函数
+    # virtual bool stopping();          // 是否可以正常结束
+    # virtual void idle();        // 协程无任务可调度时执行idle协程
+    # inline bool hasIdelThreads() {return m_idleThreadCount > 0;}
+    template<typename FiberOrCb>
+    - bool scheduleNoLock(FiberOrCb fc , int threadid);添加任务
+    # std::vector<int> m_threadIds;       // 协程下的线程id数组
+    # size_t m_threadCount = 0;           // 线程数量
+    # std::atomic<size_t> m_activeThreadCount = {0};工作的线程数量
+    # std::atomic<size_t> m_idleThreadCount = {0};空闲的线程数量
+    # bool m_stopping = true;             // 是否正在停止
+    # bool m_autostop = false;            // 是否能自动停止
+    # pid_t m_rootThreadId = 0 ;        // 主线程id(use_caller)
+    - MutexType m_mutex; // 互斥量
+    - std::vector<Thread::ptr> m_threads;  // 线程池
+    - std::list<Task> m_fibers;   // 待执行的协程队
+    - Fiber::ptr m_rootFiber; /// use_caller为true时有效, 调度协程
+    - std::string m_name; // 协程器名称
+}
+
+class Task{
+    + Fiber::ptr fiber;           // 协程
+    + std::function<void ()> cb;  // 协程执行函数
+    + int threadId;               // 线程id
+    + Task() : threadId(-1){}
+    + Task(Fiber::ptr f , int thr) : fiber(std::move(f)) // 使用移动构造之后 f指向空，shared计数器不会+1 
+    , threadId(thr){}S
+    + Task(std::function<void ()> f,int thr)
+    :cb(std::move(f)) ,threadId(thr){}
+    + void reset()
+}
+
+class IOManager{
+    + IOManager(size_t threads = 1 , bool use_caller = true , const std::string& name = "");
+    + ~IOManager();
+    + int addEvent(int fd , EventType event , std::function<void ()> cb = nullptr);添加事件 
+    + bool delEvent(int fd , EventType event); 删除事件
+    + bool cancelEvent(int fd , EventType event); 取消事件
+    + bool cancelAll(int fd); 取消所有事件
+    + static IOManager* GetThis();
+    # void tickle() override;        // 通知调度器有任务来临
+    # bool stopping() override;     // 是否可以正常结束
+    # void idle() override;        // 协程无任务可调度时执行idle协程
+    # void onTimerInsertedAtFront() override;  // 定时器容器首有元素通知
+    # bool stopping(uint64_t& timeout);
+    # void contextResize(size_t size);
+    - int m_epfd = 0; /// epoll 文件句柄
+    - int m_tickleFds[2];  /// pipe 文件句柄 [0] -- read [1]-- write
+    - std::atomic<size_t> m_pendingEventCount = {0};/// 当前等待执行的事件数量
+    - RWMutexType m_mutex; /// IOManager的Mutex
+    - std::vector<FdContext*> m_fdContexts; /// 任务事件上下文的容器
+}
+
+enum EventType{
+    NONE  = 0x000,    // 无事件
+    READ  = 0x001,    // 读事件 = EPOOLIN
+    WRITE = 0x004,    // 写事件 = EPOOLOUT    
+}
+
+class FdContext{
+    + EventContext& getContext(EventType event); 
+    + void resetContext(EventContext& eventctx); /// 重置 scheduler fiber cb  
+    + void triggerEvent(EventType event); /// 触发事件
+    + EventContext read; /// 读事件上下文
+    + EventContext write; /// 写事件上下文
+    + int fd = 0;  /// 事件关联的句柄   
+    + EventType events = NONE; /// 当前的事件  
+    + MutexType mutex; /// 事件的Mutex
+}
+
+class EventContext{
+    + Scheduler* scheduler = nullptr; /// 调度器
+    + Fiber::ptr fiber;               /// 协程
+    + std::function<void ()> cb;      /// 待执行函数
+}
+
+@enduml
+
+@startuml 调度活动图
+start
+:IOManager();
+:Scheduler();
+
+stop
+@enduml

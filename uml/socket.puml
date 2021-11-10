@@ -1,0 +1,78 @@
+@startuml Socket
+
+Object <|-- Socket套接字封装类 : 接口调用
+SockType *-- Socket套接字封装类 : 包含
+SockFamily *-- Socket套接字封装类 : 包含
+
+Object : Socket::ptr CreateTCP(wyz::Address::ptr address) : 创建TCP 类型套接字
+Object : Socket::ptr CreateUDP(wyz::Address::ptr address) : 创建UDP 类型套接字
+Object : Socket::ptr CreateTCPSock() : 创建TCP IPv4类型套接字
+Object : Socket::ptr CreateUDPSock() : 创建UDP IPv4类型套接字
+Object : Socket::ptr CreateTCPSock6() : 创建TCP IPv6类型套接字
+Object : Socket::ptr CreateUDPSock6() : 创建UDP IPv6类型套接字
+Object : Socket::ptr CreateUnixTCPSock() : 创建TCP unix类型套接字
+Object : Socket::ptr CreateUnixUDPSock() : 创建TCP unix类型套接字
+    
+
+class Socket套接字封装类{
+    
+    + Socket(int family , int type , int protocol = 0);
+    + ~Socket();
+    + int64_t getSendTimeout()const; 获得发送超时时间
+    + void setSendTimeout(const int64_t timeout_ms); 设置发送超时时间
+    + int64_t getRecvTimeout()const;  获得接受超时时间
+    + void setRecvTimeout(const int64_t timeout_ms); 设置接受超时时间
+    + bool  getOption(int level , int option , void* val , socklen_t* lenp); 获得套接字设置选项
+    + bool setOption(int level , int option , const void* val , socklen_t len); 设置套接字设置选项
+    + Socket::ptr accept(); 服务端接受客户端连接
+    + bool connect(const Address::ptr address, uint64_t timeout_ms = -1); 客户端发起向服务端的连接
+    + bool bind( const Address::ptr address); 服务端绑定本地地址
+    + bool listen(int backlog); 监听来着客户端的连接
+    + bool close(); 关闭
+    + int send(const void * buf, size_t len, int flags = 0); 发送数据
+    + int send(const iovec * buf, size_t len, int flags = 0);
+    + int sendto(const void * buf, size_t len, Address::ptr to,  int flags = 0);
+    + int sendto(const iovec * buf, size_t len, Address::ptr to, int flags = 0);
+    + int recv(void *buf, size_t len, int flags = 0); 接受数据
+    + int recv(iovec *buf, size_t len, int flags = 0);
+    int recvfrom(void *buf, size_t len, Address::ptr from ,int flags = 0);
+    + int recvfrom(iovec *buf, size_t len, Address::ptr from ,int flags = 0);
+    + Address::ptr getRemoteAddress(); 
+    + Address::ptr getLocalAddress();
+    + inline bool isConnected()const  {return m_isConnected;}
+    + bool isvaild()const; m_soke 是否为 -1
+    + int getError();
+    + std::ostream& dump(std::ostream& os)const;
+    + std::string toString()const;
+    + bool cancelRead(); 取消读事件
+    + bool cancelWrite();
+    + bool cancelAccept();
+    + bool cancelAll();
+    + inline const int getSocket()const   {return m_sock;}
+    + inline const int getFamily() const  {return m_family;}
+    + inline const int getType() const    {return m_type;}
+    + inline const int getProtocol() const {return m_protocol;}
+    # void initSocket(); 初始化socket
+    # void newSocket(); 新建一个socket
+    # bool init(int sock); 通过给定的一个socket 句柄来初始化
+    - int m_sock; 创建出来的 socket 句柄
+    - int m_family; socket家族 (AF_INET AF_INET6 AF_UNIX)
+    - int m_type;  传输类型 TCP UDP
+    - int m_protocol; 默认协议 0
+    - bool m_isConnected; 是否已经连接上 connect
+    - Address::ptr m_remoteAddress;  对端的地址
+    - Address::ptr m_localAddress;  本地地址
+}
+
+enum SockType{
+    TCP = SOCK_STREAM,
+    UDP = SOCK_DGRAM
+}
+
+enum SockFamily{
+    IPv4 = AF_INET,
+    IPv6 = AF_INET6,
+    Unix = AF_UNIX
+}
+
+@enduml
