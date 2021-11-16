@@ -165,7 +165,7 @@ std::ostream& HttpRequest::dump(std::ostream& os){
         << m_query 
         << (m_fragment.empty() ? "" : "#")
         << m_fragment
-        << "HTTP/" 
+        << " HTTP/" 
         << ((uint32_t)(m_version >> 4))
         << "."
         << ((uint32_t)(m_version & 0x0F))

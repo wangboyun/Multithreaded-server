@@ -15,6 +15,7 @@
 #include "../log.h"
 #include "../config.h"
 #include <cstring>
+#include <string>
 
 namespace wyz {
 namespace http {
@@ -100,16 +101,17 @@ void on_request_query_string(void *data, const char *at, size_t length){
 
 void on_http_request_version(void *data, const char *at, size_t length){
     HttpRequestParser* parser = static_cast<HttpRequestParser*>(data);
-    // uint8_t v = 0;
+    uint8_t v = 0;
     if(strncmp(at,"HTTP/1.1",length) == 0){
-        parser->getData()->setVersion(0x11);
+        v = 0x11;
     }else if(strncmp(at,"HTTP/1.0",length) == 0){
-        parser->getData()->setVersion(0x10);
+        v = 0x10;
     }else {
         WYZ_LOG_WARN(g_logger) << "http request version is  unvaild";
         parser->setError(1001);
         return;
     }
+    parser->getData()->setVersion(v);
 }
 
 void on_http_request_header_done(void *data, const char *at, size_t length){
@@ -141,6 +143,11 @@ HttpRequestParser::HttpRequestParser()
     m_parser.data = this;
 }
 
+uint64_t HttpRequestParser::getContentLength(){
+    return m_data->getHeaderAs<uint64_t>("content-length", 0);
+}
+
+
 int HttpRequestParser::isFinish(){
     return http_parser_finish(&m_parser);
 }
@@ -157,7 +164,8 @@ size_t HttpRequestParser::exectue( char* data , size_t len){
 
 
 void on_response_reason_phrase(void *data, const char *at, size_t length){
-
+    HttpResponseParser* parser = static_cast<HttpResponseParser*>(data);
+    parser->getData()->setReason(std::string(at,length));
 }
 
 void on_response_status_code(void *data, const char *at, size_t length){
@@ -169,7 +177,18 @@ void on_response_chunk_size(void *data, const char *at, size_t length){
 }
 
 void on_response_http_version(void *data, const char *at, size_t length){
-
+    HttpResponseParser* parser = static_cast<HttpResponseParser*>(data);
+    uint8_t v = 0;
+    if(strncmp(at, "HTTP/1.1",length) == 0){
+        v = 0x11;
+    }else if(strncmp(at, "HTTP/1.0", length) == 0){
+        v = 0x10;
+    }else {
+        WYZ_LOG_WARN(g_logger) << "http response version is  unvaild";
+        parser->setError(1001);
+        return;
+    }
+    parser->getData()->setVersion(v);
 }
 
 void on_response_header_done(void *data, const char *at, size_t length){
@@ -181,7 +200,12 @@ void on_response_last_chunk(void *data, const char *at, size_t length){
 }
 
 void on_response_http_field(void *data, const char *field, size_t flen, const char *value, size_t vlen){
-    
+    HttpResponseParser* parser = static_cast<HttpResponseParser*>(data);
+    if(flen == 0){
+        WYZ_LOG_ERROR(g_logger) << "http request file length == 0";
+        return;
+    }
+    parser->getData()->setHeader(std::string(field ,flen), std::string(value ,vlen));
 }
 
 HttpResponseParser::HttpResponseParser()
@@ -198,6 +222,10 @@ HttpResponseParser::HttpResponseParser()
     m_parser.data = this;
 }
 
+uint64_t HttpResponseParser::getContentLength(){
+    return m_data->getHeaderAs<uint64_t>("content-length", 0);
+}
+
 int HttpResponseParser::isFinish(){
     return httpclient_parser_finish(&m_parser);
 }
@@ -207,6 +235,8 @@ int HttpResponseParser::hasError(){
 }
     
 size_t HttpResponseParser::exectue(char* data , size_t len){
+    size_t offset = httpclient_parser_execute(&m_parser,data , len , 0);
+    memmove(data, data + offset, (len - offset));
     return 0;
 }
 

@@ -48,6 +48,7 @@ public:
 
     inline void setError(int v) {m_error = v;}
 
+    uint64_t getContentLength();
 private:
     http_parser m_parser;         
     HttpRequest::ptr m_data;    /// 请求数据
@@ -83,6 +84,7 @@ public:
 
     inline void setError(int v) {m_error = v;}
 
+    uint64_t getContentLength();
 private:
     httpclient_parser m_parser;         
     HttpResponse::ptr m_data;    /// 接受数据
