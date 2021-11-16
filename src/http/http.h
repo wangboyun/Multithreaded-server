@@ -324,7 +324,7 @@ public:
     }
 
     std::ostream& dump(std::ostream& os);
-    
+    std::string toString();
     void init();
     void initParam();
     void initQueryParam();
@@ -385,6 +385,7 @@ public:
     }
 
     std::ostream& dump(std::ostream& os);
+    std::string toString();
 private:
     HttpStatus m_status;        /// 回应的状态
     uint8_t m_version;          /// http 版本号

@@ -2,6 +2,7 @@
 #include "http.h"
 #include <cstdint>
 #include <cstdlib>
+#include <sstream>
 #include <strings.h>
 
 namespace wyz {
@@ -186,6 +187,13 @@ std::ostream& HttpRequest::dump(std::ostream& os){
     return os;
 }
 
+std::string HttpRequest::toString(){
+    std::stringstream ss;
+    dump(ss);
+    return ss.str();
+}
+
+
 void HttpRequest::init(){}
 void HttpRequest::initParam(){}
 void HttpRequest::initQueryParam(){}
@@ -244,6 +252,13 @@ std::ostream& HttpResponse::dump(std::ostream& os){
     }
     return os;
 }
+
+std::string HttpResponse::toString(){
+    std::stringstream ss;
+    dump(ss);
+    return ss.str();
+}
+
 
 }
 }
