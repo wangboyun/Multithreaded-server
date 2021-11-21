@@ -323,7 +323,7 @@ public:
         return getAs(m_headers, key, def);
     }
 
-    std::ostream& dump(std::ostream& os);
+    std::ostream& dump(std::ostream& os)const;
     std::string toString();
     void init();
     void initParam();
@@ -384,7 +384,7 @@ public:
         return getAs(m_headers, key,def);
     }
 
-    std::ostream& dump(std::ostream& os);
+    std::ostream& dump(std::ostream& os) const;
     std::string toString();
 private:
     HttpStatus m_status;        /// 回应的状态
@@ -396,6 +396,9 @@ private:
 
     MapType m_headers;          /// 回应头部
 };
+
+std::ostream& operator<< ( std::ostream& os, const HttpRequest& req);
+std::ostream& operator<< ( std::ostream& os, const HttpResponse& res);
 
 }
 }

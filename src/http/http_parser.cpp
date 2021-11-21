@@ -33,6 +33,21 @@ static uint64_t http_request_max_body_size = 0;
 static uint64_t http_response_buffer_size = 0;
 static uint64_t http_response_max_body_size = 0;
 
+uint64_t HttpRequestParser::GetHttpRequestBufferSize(){
+    return http_request_buffer_size;
+}
+uint64_t HttpRequestParser::GetHttpRequestBodySize(){
+    return http_request_max_body_size;
+}
+
+uint64_t HttpResponseParser::GetHttpResponseBufferSize(){
+    return http_response_buffer_size;
+}
+
+uint64_t HttpResponseParser::GetHttpResponseBodySize(){
+    return http_response_max_body_size;
+}
+
 namespace  {
     struct _RequestSizeIniter{
     _RequestSizeIniter(){
@@ -157,9 +172,9 @@ int HttpRequestParser::hasError(){
 }
 
 size_t HttpRequestParser::exectue( char* data , size_t len){
-    size_t offset = http_parser_execute(&m_parser,data , len , 0);
+    size_t offset = http_parser_execute(&m_parser, data , len , 0);
     memmove(data, data + offset, (len - offset));
-    return 0;
+    return offset;
 }
 
 
@@ -237,7 +252,7 @@ int HttpResponseParser::hasError(){
 size_t HttpResponseParser::exectue(char* data , size_t len){
     size_t offset = httpclient_parser_execute(&m_parser,data , len , 0);
     memmove(data, data + offset, (len - offset));
-    return 0;
+    return offset;
 }
 
 }

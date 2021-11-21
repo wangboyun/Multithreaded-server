@@ -34,7 +34,7 @@ static const char* s_method_string[] = {
 #undef XX
 };
 
-const char* HttpMethodToString(HttpMethod& m){
+const char* HttpMethodToString(const HttpMethod& m){
     uint32_t index = (uint32_t) m;
     if(index >= (sizeof(s_method_string) / sizeof(s_method_string[0]))){
         return "<unknown>";
@@ -42,7 +42,7 @@ const char* HttpMethodToString(HttpMethod& m){
     return s_method_string[index];
 }
 
-const char* HttpStatusToString(HttpStatus& s){
+const char* HttpStatusToString(const HttpStatus& s){
     switch (s) {
 #define XX(code , name , msg) \
         case HttpStatus::name: \
@@ -154,7 +154,7 @@ bool HttpRequest::hasCookie(const std::string& key, std::string* val){
     return true;
 }
 
-std::ostream& HttpRequest::dump(std::ostream& os){
+std::ostream& HttpRequest::dump(std::ostream& os) const{
     //GET /uri HTTP/1.1
     //Host: wwww.sylar.top
     //
@@ -175,7 +175,7 @@ std::ostream& HttpRequest::dump(std::ostream& os){
     for(auto i : m_headers){
         if(strcasecmp(i.first.c_str(), "connection") == 0)
             continue;
-        os << i.first << ":" << i.second << "\r\n";
+        os << i.first << ": " << i.second << "\r\n";
     }
     
     if(!m_body.empty()) {
@@ -226,7 +226,7 @@ void HttpResponse::delHeader(const std::string& key){
     m_headers.erase(key);
 }
 
-std::ostream& HttpResponse::dump(std::ostream& os){
+std::ostream& HttpResponse::dump(std::ostream& os) const {
     os << "HTTP/"
         << ((uint32_t)(m_version >> 4))
         << "."
@@ -257,6 +257,14 @@ std::string HttpResponse::toString(){
     std::stringstream ss;
     dump(ss);
     return ss.str();
+}
+
+std::ostream& operator<< ( std::ostream& os,  const HttpRequest& req){
+    return req.dump(os);
+}
+
+std::ostream& operator<< ( std::ostream& os, const HttpResponse& res){
+    return res.dump(os);
 }
 
 

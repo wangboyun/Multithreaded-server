@@ -15,6 +15,7 @@
 #include "http.h"
 #include "http11_parser.h"
 #include "httpclient_parser.h"
+#include <cstdint>
 
 namespace wyz {
 namespace http {
@@ -49,6 +50,10 @@ public:
     inline void setError(int v) {m_error = v;}
 
     uint64_t getContentLength();
+
+public:
+    static uint64_t GetHttpRequestBufferSize();
+    static uint64_t GetHttpRequestBodySize();
 private:
     http_parser m_parser;         
     HttpRequest::ptr m_data;    /// 请求数据
@@ -85,6 +90,11 @@ public:
     inline void setError(int v) {m_error = v;}
 
     uint64_t getContentLength();
+
+public:
+    static uint64_t GetHttpResponseBufferSize();
+    static uint64_t GetHttpResponseBodySize();
+
 private:
     httpclient_parser m_parser;         
     HttpResponse::ptr m_data;    /// 接受数据
